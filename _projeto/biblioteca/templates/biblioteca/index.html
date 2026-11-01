@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biblioteca</title>
+  <link rel="stylesheet" href="{% static 'biblioteca/style.css' %}">
+</head>
+<body>
+  <main>
+    <h1>Biblioteca</h1>
+
+    <p class="error" id="error" hidden></p>
+
+    <form class="card" id="form">
+      <h2 id="formTitle">Novo livro</h2>
+      <div class="grid">
+        <div class="full">
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" required>
+        </div>
+        <div>
+          <label for="autor">Autor</label>
+          <input type="text" id="autor" required>
+        </div>
+        <div>
+          <label for="isbn">ISBN</label>
+          <input type="text" id="isbn" required>
+        </div>
+        <div>
+          <label for="dataPublicacao">Data de publicação (opcional)</label>
+          <input type="date" id="dataPublicacao">
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" type="submit" id="submitBtn">Adicionar livro</button>
+        <button type="button" id="cancelBtn" hidden>Cancelar edição</button>
+      </div>
+    </form>
+
+    <div class="toolbar">
+      <input type="search" id="search" placeholder="Buscar por título ou autor" aria-label="Buscar livro">
+      <span class="count" id="count"></span>
+    </div>
+
+    <ul id="list"></ul>
+  </main>
+
+  <script src="{% static 'biblioteca/script.js' %}"></script>
+</body>
+</html>
