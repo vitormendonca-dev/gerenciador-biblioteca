@@ -1,0 +1,8 @@
+#Arquivo Venv
+.venv
+
+#Cache do Python
+__pycache__/
+
+#Banco de Dados
+db.sqlite3
