@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buscar Novos Livros - Biblioteca</title>
+  <link rel="stylesheet" href="{% static 'biblioteca/style.css' %}">
+</head>
+<body>
+  <main>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h1>Buscar Livros no Google</h1>
+      <a href="{%url 'home'%}" style="text-decoration: none; color: #2563eb; font-weight: 500;">← Voltar para Minha Estante</a>
+    </div>
+
+    <!-- Barra de Pesquisa Principal -->
+    <div class="toolbar">
+      <input type="search" id="search" placeholder="Digite o título, autor ou assunto..." aria-label="Buscar livro" style="width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc;">
+    </div>
+
+    <!-- Grelha onde os cartões dos livros vão aparecer -->
+    <ul id="list"></ul>
+  </main>
+
+  <script src="{% static 'biblioteca/script_busca.js' %}"></script>
+</body>
+</html>

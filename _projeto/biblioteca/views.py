@@ -6,9 +6,12 @@ from rest_framework.response import Response
 def index(request):
     return render(request, 'biblioteca/index.html')
 
+def buscar_livro(request):
+    return render(request, 'biblioteca/pagina_busca.html')      
+
 
 @api_view(['GET'])
-def buscar_livro(request):
+def pagina_busca(request):
     termo = request.GET.get('termo', '')
     if termo:
         resultado = buscarLivro(termo)

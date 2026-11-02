@@ -1,7 +1,8 @@
+console.log('script_busca NOVO carregado') || console.log('script velho carregado');
 const searchInput = document.getElementById('search');
 const listContainer = document.getElementById('list');
 
-searchInput.addEventListener('keypress', async function(e) {
+searchInput.addEventListener('keypress', async function (e) {
     if (e.key === 'Enter') {
         const termo = searchInput.value.trim();
 
@@ -10,27 +11,28 @@ searchInput.addEventListener('keypress', async function(e) {
         listContainer.innerHTML = '<li style="grid-column: 1 / -1; text-align: center;">Buscando...</li>';
 
         try {
-            const resposta = await fetch(`/api/pesquisa/?termo=${encodeURIComponent(termo)}`); 
+            const resposta = await fetch(`/api/pesquisa/?termo=${encodeURIComponent(termo)}`);
+            if (!resposta.ok) throw new Error('Falha na busca');
             const dados = await resposta.json();
+            console.log(dados);
 
             listContainer.innerHTML = '';
 
-            if (dados.items && dados.items.length > 0) {
-                dados.items.forEach(livro => {
-                    const info = livro.volumeInfo;
-                    const titulo = info.title || 'Título desconhecido';
-                    const autor = info.authors ? info.authors.join(', ') : 'Autor desconhecido';
-                    const capa = info.imageLinks && info.imageLinks.thumbnail ? info.imageLinks.thumbnail : '';
-
+            if (dados.docs && dados.docs.length > 0) {
+                dados.docs.forEach(livro => {
+                    const titulo = livro.title || 'Título desconhecido';
+                    const autor = livro.author_name ? livro.author_name.join(', ') : 'Autor desconhecido';
+                    const capa = livro.cover_i
+                        ? `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`
+                        : '';
                     const li = document.createElement('li');
                     li.className = 'card-livro';
-
                     li.innerHTML = `
                         <div>
-                            ${capa 
-                                ? `<img src="${capa}" alt="Capa do livro">` 
-                                : '<div class="sem-capa-box">Sem capa</div>'
-                            }
+                            ${capa
+                            ? `<img src="${capa}" alt="Capa do livro">`
+                            : '<div class="sem-capa-box">Sem capa</div>'
+                        }
                             <h4>${titulo}</h4>
                             <p>${autor}</p>
                         </div>

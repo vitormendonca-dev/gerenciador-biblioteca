@@ -4,49 +4,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Biblioteca</title>
+  <title>Minha Estante - Biblioteca</title>
   <link rel="stylesheet" href="{% static 'biblioteca/style.css' %}">
 </head>
 <body>
   <main>
-    <h1>Biblioteca</h1>
-
-    <p class="error" id="error" hidden></p>
-
-    <form class="card" id="form">
-      <h2 id="formTitle">Novo livro</h2>
-      <div class="grid">
-        <div class="full">
-          <label for="titulo">Título</label>
-          <input type="text" id="titulo" required>
-        </div>
-        <div>
-          <label for="autor">Autor</label>
-          <input type="text" id="autor" required>
-        </div>
-        <div>
-          <label for="isbn">ISBN</label>
-          <input type="text" id="isbn" required>
-        </div>
-        <div>
-          <label for="dataPublicacao">Data de publicação (opcional)</label>
-          <input type="date" id="dataPublicacao">
-        </div>
-      </div>
-      <div class="actions">
-        <button class="primary" type="submit" id="submitBtn">Adicionar livro</button>
-        <button type="button" id="cancelBtn" hidden>Cancelar edição</button>
-      </div>
-    </form>
-
-    <div class="toolbar">
-      <input type="search" id="search" placeholder="Buscar por título ou autor" aria-label="Buscar livro">
-      <span class="count" id="count"></span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h1>Minha Estante Pessoal</h1>
+      <!-- Botão que leva para a página de busca que acabámos de criar -->
+      <a href="/buscar/" class="primary" style="text-decoration: none; padding: 10px 16px; background: #2563eb; color: white; border-radius: 6px; font-weight: 500;">+ Buscar Novos Livros</a>
     </div>
 
-    <ul id="list"></ul>
-  </main>
+    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
 
-  <script src="{% static 'biblioteca/script.js' %}"></script>
+    <!-- Grelha onde o Django vai listar os livros salvos na base de dados -->
+    <ul id="list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; list-style: none; padding: 0;">
+      {% if livros %}
+        {% for livro in livros %}
+          <li class="card-livro" style="background: #ffffff; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              {% if livro.capa_url %}
+                <img src="{{ livro.capa_url }}" alt="Capa" style="width: 100%; height: 220px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;">
+              {% else %}
+                <div class="sem-capa-box" style="width: 100%; height: 220px; background: #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; margin-bottom: 12px;">Sem capa</div>
+              {% endif %}
+              <h4 style="font-size: 15px; color: #1e293b; margin: 0 0 6px 0;">{{ livro.titulo }}</h4>
+              <p style="font-size: 13px; color: #64748b; margin: 0 0 15px 0;">{{ livro.autor }}</p>
+            </div>
+            <!-- Botão para remover ou gerir o livro da estante -->
+            <button style="background: #ef4444; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%;">Remover</button>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li style="grid-column: 1 / -1; text-align: center; color: #64748b; padding: 40px;">
+          A tua estante ainda está vazia. Clica em <strong>"Buscar Novos Livros"</strong> para começar!
+        </li>
+      {% endif %}
+    </ul>
+  </main>
 </body>
 </html>
