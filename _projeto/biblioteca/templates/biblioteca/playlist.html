@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minha Playlist Pessoal</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white">
+
+  <!-- Cabeçalho -->
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🎧</span>
+        <h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">
+          Minha Playlist
+        </h1>
+      </div>
+      
+      <!-- Botão para a página de busca -->
+      <a href="{%url 'home'%}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-xl transition-all shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 hover:-translate-y-0.5 active:translate-y-0">
+        <span>Voltar à tela Inicial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="max-w-7xl mx-auto px-6 py-10">
+    
+    <div class="mb-8">
+      <h2 class="text-xl font-bold text-slate-200">Biblioteca de Faixas</h2>
+      <p class="text-sm text-slate-400 mt-1">Gerencie suas músicas favoritas salvas na base de dados.</p>
+    </div>
+
+    <!-- Grelha de Músicas -->
+    <ul id="list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 list-none p-0">
+      {% if musicas %}
+        {% for musica in musicas %}
+          <li class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-xl hover:border-slate-700 hover:shadow-2xl transition-all duration-300 group">
+            
+            <div class="space-y-4">
+              <!-- Capa do Álbum -->
+              <div class="relative overflow-hidden rounded-xl aspect-square bg-slate-800 flex items-center justify-center">
+                {% if musica.capa %}
+                  <img src="{{ musica.capa }}" alt="Capa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                {% else %}
+                  <div class="text-slate-500 text-sm font-medium">Sem capa</div>
+                {% endif %}
+              </div>
+
+              <!-- Informações da Música -->
+              <div>
+                <h4 class="font-bold text-slate-100 text-base truncate" title="{{ musica.titulo }}">{{ musica.titulo }}</h4>
+                <p class="text-sm text-slate-400 truncate mt-0.5" title="{{ musica.artista }}">{{ musica.artista }}</p>
+              </div>
+
+              <!-- Link Deezer -->
+              {% if musica.link %}
+                <a href="{{ musica.link }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors">
+                  <span>🎵</span> Ouvir música inteira no Deezer
+                </a>
+              {% endif %}
+
+              <!-- Prévia de Áudio -->
+              {% if musica.preview %}
+                <audio controls src="{{ musica.preview }}" class="w-full h-9 rounded-lg accent-indigo-500 bg-slate-800/60"></audio>
+              {% endif %}
+            </div>
+
+            <!-- Botão Remover -->
+            <button onclick="removerMusica({{ musica.id }}, this)"class="mt-5 w-full bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/20 hover:border-red-500 py-2.5 rounded-xl text-sm font-medium transition-all duration-200">
+              Remover da Playlist
+            </button>
+          </li>
+        {% endfor %}
+      {% else %}
+        <!-- Estado Vazio -->
+        <li class="col-span-full flex flex-col items-center justify-center py-20 text-center bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
+          <span class="text-5xl mb-3">📭</span>
+          <p class="text-slate-300 font-medium text-lg">A tua playlist ainda está vazia.</p>
+          <p class="text-slate-500 text-sm mt-1 mb-6">Comece agora a explorar e guardar as suas músicas favoritas!</p>
+          <a href="/buscar/" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-xl transition-all shadow-lg shadow-indigo-600/20">
+            Buscar Novas Músicas
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </main>
+
+  <script src="{% static 'biblioteca/script_busca.js' %}"></script>
+</body>
+</html>
