@@ -1,70 +1,61 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-BR" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Minha Playlist Pessoal</title>
-  <link rel="stylesheet" href="{% static 'biblioteca/style.css' %}">
+  <title>SoundHub - Início</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white">
 
-<body>
-  <main>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h1>Minha Playlist Pessoal</h1>
-      <!-- Botão que leva para a página de busca -->
-      <a href="/buscar/" class="primary"
-        style="text-decoration: none; padding: 10px 16px; background: #2563eb; color: white; border-radius: 6px; font-weight: 500;">+
-        Buscar Novas Músicas</a>
+  <!-- Cabeçalho (Navbar tipo YouTube com busca no topo/canto) -->
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
+      
+      <!-- Logótipo -->
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🎧</span>
+        <h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">
+          SoundHub
+        </h1>
+      </div>
+
+      <!-- Barra de Pesquisa no Topo -->
+      <div class="flex-1 max-w-xl">
+        <input 
+          type="search" 
+          id="search" 
+          placeholder="Pesquisar músicas ou artistas..." 
+          class="w-full bg-slate-900 border border-slate-800 rounded-full px-5 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-inner text-sm"
+        >
+      </div>
+      
+      <!-- Link para a Playlist Pessoal -->
+      <div class="flex items-center gap-3">
+        <a href="{% url 'playlist' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm rounded-xl transition-all border border-slate-700">
+          <span>🎵 Minha Playlist</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="max-w-7xl mx-auto px-6 py-10 space-y-8">
+    
+    <!-- Título da Seção -->
+    <div>
+      <h2 id="titulo-secao" class="text-xl font-bold text-slate-100">Explorar Músicas em Alta</h2>
+      <p class="text-sm text-slate-400 mt-0.5">Descobre as faixas mais populares do momento ou pesquisa o que quiseres.</p>
     </div>
 
-    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
-
-    <!-- Grelha onde o Django vai listar as músicas salvas na base de dados -->
-    <ul id="list"
-      style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; list-style: none; padding: 0;">
-      {% if musicas %}
-      {% for musica in musicas %}
-      <li class="card-musica"
-        style="background: #ffffff; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          {% if musica.capa %}
-          <img src="{{ musica.capa }}" alt="Capa"
-            style="width: 100%; height: 220px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;">
-          {% else %}
-          <div class="sem-capa-box"
-            style="width: 100%; height: 220px; background: #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; margin-bottom: 12px;">
-            Sem capa</div>
-          {% endif %}
-          <h4 style="font-size: 15px; color: #1e293b; margin: 0 0 6px 0;">{{ musica.titulo }}</h4>
-          <p style="font-size: 13px; color: #64748b; margin: 0 0 15px 0;">{{ musica.artista }}</p>
-
-          {% if musica.link %}
-          <a href="{{ musica.link }}" target="_blank"
-            style="display: block; text-align: center; margin-top: 8px; font-size: 13px; color: #2563eb; text-decoration: none;">
-            🎵 Ouvir música inteira no Deezer
-          </a>
-          {% endif %}
-
-          {% if musica.preview %}
-          <audio controls src="{{ musica.preview }}" style="width: 100%; margin-top: 10px;"></audio>
-          {% endif %}
-        </div>
-
-        <!-- Botão corrigido com o ID da música -->
-        <button onclick="removerMusica({{ musica.id }})"
-          style="background: #ef4444; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%;">Remover</button>
-      </li>
-      {% endfor %}
-      {% else %}
-      <li style="grid-column: 1 / -1; text-align: center; color: #64748b; padding: 40px;">
-        A tua playlist ainda está vazia. Clica em <strong>"Buscar Novos Músicas"</strong> para começar!
-      </li>
-      {% endif %}
+    <!-- Grelha onde aparecem as músicas (Em alta ou Resultados da Pesquisa) -->
+    <ul id="list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 list-none p-0">
+      <!-- O JavaScript preenche isto automaticamente ao carregar -->
     </ul>
+
   </main>
+
   <script src="{% static 'biblioteca/script_busca.js' %}"></script>
 </body>
-
 </html>

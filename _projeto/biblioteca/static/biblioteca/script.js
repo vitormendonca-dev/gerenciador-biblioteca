@@ -50,10 +50,10 @@ searchInput.addEventListener('input', async function(e) {
                 listContainer.appendChild(li);
             });
         } else {
-            listContainer.innerHTML = '<li style="padding: 10px; color: #666;">Nenhum livro encontrado.</li>';
+            listContainer.innerHTML = '<li style="padding: 10px; color: #666;">Nenhuma música encontrada.</li>';
         }
 
     } catch (erro) {
-        console.error('Erro ao buscar os livros:', erro);
+        console.error('Erro ao buscar as músicas:', erro);
     }
 });

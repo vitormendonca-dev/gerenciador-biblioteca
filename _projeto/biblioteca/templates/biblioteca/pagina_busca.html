@@ -1,26 +1,53 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Buscar Novos Livros - Biblioteca</title>
-  <link rel="stylesheet" href="{% static 'biblioteca/style.css' %}">
+  <title>Buscar Músicas - SoundHub</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <main>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h1>Buscar Livros no Google</h1>
-      <a href="{%url 'home'%}" style="text-decoration: none; color: #2563eb; font-weight: 500;">← Voltar para Minha Estante</a>
-    </div>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white">
 
+  <!-- Cabeçalho -->
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🔍</span>
+        <h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">
+          Buscar Novas Músicas
+        </h1>
+      </div>
+      
+      <!-- Link para voltar -->
+      <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition-colors">
+        <span>← Voltar para Minha Estante</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="max-w-7xl mx-auto px-6 py-10 space-y-8">
+    
     <!-- Barra de Pesquisa Principal -->
-    <div class="toolbar">
-      <input type="search" id="search" placeholder="Digite o título, autor ou assunto..." aria-label="Buscar livro" style="width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc;">
+    <div class="max-w-2xl mx-auto">
+      <div class="relative">
+        <input 
+          type="search" 
+          id="search" 
+          placeholder="Digite o título da música ou artista..." 
+          aria-label="Buscar música" 
+          class="w-full bg-slate-900/80 border border-slate-800 rounded-2xl px-5 py-4 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-xl transition-all text-base"
+        >
+      </div>
     </div>
 
-    <!-- Grelha onde os cartões dos livros vão aparecer -->
-    <ul id="list"></ul>
+    <!-- Grelha onde os cartões das músicas encontradas vão aparecer -->
+    <ul id="list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 list-none p-0">
+      <!-- O JavaScript vai injetar os resultados dinamicamente aqui -->
+    </ul>
+
   </main>
 
   <script src="{% static 'biblioteca/script_busca.js' %}"></script>
