@@ -108,6 +108,60 @@ if (termoDaUrl && termoDaUrl.length >= 2) {
     buscar(termoDaUrl, false);
 }
 
-function salvarLivro(titulo, autor, capa) {
-    alert(`Em breve: Salvar o livro "${titulo}" no banco de dados!`);
+async function salvarLivro(titulo, autor, capa) {
+    try {
+        const resposta = await fetch('/api/salvar/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': obterCookie('csrftoken') 
+            },
+            body: JSON.stringify({ titulo, autor, capa })
+        });
+
+        const resultado = await resposta.json();
+        
+        if (resposta.ok) {
+            alert(`Sucesso: "${titulo}" foi adicionado à tua Estante!`);
+        } else {
+            alert(`Erro ao salvar: ${resultado.mensagem}`);
+        }
+    } catch (erro) {
+        console.error('Erro:', erro);
+        alert('Erro de conexão ao tentar salvar o livro.');
+    }
+}
+
+function obterCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+async function removerLivro(id) {
+    try {
+        const resposta = await fetch(`/api/remover/${id}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': obterCookie('csrftoken') 
+            }
+        });
+        if (resposta.ok) {
+            window.location.reload();
+        } else {
+            alert('Erro ao remover o livro. Por favor, tente novamente.');
+        }
+
+    } catch (erro) {
+        console.error('Erro:', erro);
+    }
 }
