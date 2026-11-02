@@ -1,47 +1,70 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Minha Estante - Biblioteca</title>
+  <title>Minha Playlist Pessoal</title>
   <link rel="stylesheet" href="{% static 'biblioteca/style.css' %}">
 </head>
+
 <body>
   <main>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h1>Minha Estante Pessoal</h1>
-      <!-- Botão que leva para a página de busca que acabámos de criar -->
-      <a href="/buscar/" class="primary" style="text-decoration: none; padding: 10px 16px; background: #2563eb; color: white; border-radius: 6px; font-weight: 500;">+ Buscar Novos Livros</a>
+      <h1>Minha Playlist Pessoal</h1>
+      <!-- Botão que leva para a página de busca -->
+      <a href="/buscar/" class="primary"
+        style="text-decoration: none; padding: 10px 16px; background: #2563eb; color: white; border-radius: 6px; font-weight: 500;">+
+        Buscar Novas Músicas</a>
     </div>
 
     <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
 
-    <!-- Grelha onde o Django vai listar os livros salvos na base de dados -->
-    <ul id="list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; list-style: none; padding: 0;">
-      {% if livros %}
-        {% for livro in livros %}
-          <li class="card-livro" style="background: #ffffff; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              {% if livro.capa %}
-                <img src="{{ livro.capa }}" alt="Capa" style="width: 100%; height: 220px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;">
-              {% else %}
-                <div class="sem-capa-box" style="width: 100%; height: 220px; background: #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; margin-bottom: 12px;">Sem capa</div>
-              {% endif %}
-              <h4 style="font-size: 15px; color: #1e293b; margin: 0 0 6px 0;">{{ livro.titulo }}</h4>
-              <p style="font-size: 13px; color: #64748b; margin: 0 0 15px 0;">{{ livro.autor }}</p>
-            </div>
-            <!-- Botão para remover ou gerir o livro da estante -->
-            <button onclick="removerLivro({{ livro.id }})" style="background: #ef4444; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%;">Remover</button>
-          </li>
-        {% endfor %}
+    <!-- Grelha onde o Django vai listar as músicas salvas na base de dados -->
+    <ul id="list"
+      style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; list-style: none; padding: 0;">
+      {% if musicas %}
+      {% for musica in musicas %}
+      <li class="card-musica"
+        style="background: #ffffff; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          {% if musica.capa %}
+          <img src="{{ musica.capa }}" alt="Capa"
+            style="width: 100%; height: 220px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;">
+          {% else %}
+          <div class="sem-capa-box"
+            style="width: 100%; height: 220px; background: #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; margin-bottom: 12px;">
+            Sem capa</div>
+          {% endif %}
+          <h4 style="font-size: 15px; color: #1e293b; margin: 0 0 6px 0;">{{ musica.titulo }}</h4>
+          <p style="font-size: 13px; color: #64748b; margin: 0 0 15px 0;">{{ musica.artista }}</p>
+
+          {% if musica.link %}
+          <a href="{{ musica.link }}" target="_blank"
+            style="display: block; text-align: center; margin-top: 8px; font-size: 13px; color: #2563eb; text-decoration: none;">
+            🎵 Ouvir música inteira no Deezer
+          </a>
+          {% endif %}
+
+          {% if musica.preview %}
+          <audio controls src="{{ musica.preview }}" style="width: 100%; margin-top: 10px;"></audio>
+          {% endif %}
+        </div>
+
+        <!-- Botão corrigido com o ID da música -->
+        <button onclick="removerMusica({{ musica.id }})"
+          style="background: #ef4444; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%;">Remover</button>
+      </li>
+      {% endfor %}
       {% else %}
-        <li style="grid-column: 1 / -1; text-align: center; color: #64748b; padding: 40px;">
-          A tua estante ainda está vazia. Clica em <strong>"Buscar Novos Livros"</strong> para começar!
-        </li>
+      <li style="grid-column: 1 / -1; text-align: center; color: #64748b; padding: 40px;">
+        A tua playlist ainda está vazia. Clica em <strong>"Buscar Novos Músicas"</strong> para começar!
+      </li>
       {% endif %}
     </ul>
   </main>
   <script src="{% static 'biblioteca/script_busca.js' %}"></script>
 </body>
+
 </html>

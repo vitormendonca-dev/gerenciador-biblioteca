@@ -1,19 +1,30 @@
 import requests
-from django.conf import settings
 
-def buscarLivro(termo):
+def buscarMusica(termo):
   termo_formatado = termo.replace(' ', '+')
-  url = f'https://openlibrary.org/search.json?q={termo_formatado}'
-  
-  
+  url = f'https://api.deezer.com/search?q={termo_formatado}'
+
   try:
-    # Mantém o verify=False caso seja problema de certificado SSL local
     resposta = requests.get(url, timeout=5)
     if resposta.status_code == 200:
-      return resposta.json()
-    print(f'Google Books respondeu com status: {resposta.status_code}')
-    return None
+      dados = resposta.json()
+      musicas_formatadas = []
+
+      # O Deezer guarda os resultados dentro da chave 'data'
+      for item in dados.get('data', []):
+        musica = {
+            'titulo': item.get('title'),
+            'artista': item.get('artist', {}).get('name'),
+            'capa': item.get('album', {}).get('cover_medium'),
+            'preview': item.get('preview'),
+            'link': item.get('link'),
+        }
+        musicas_formatadas.append(musica)
+
+      return musicas_formatadas
+
+    print(f'Deezer respondeu com status: {resposta.status_code}')
+    return []
   except Exception as error:
-    # Isto vai mostrar o erro exato em letras vermelhas gigantes no terminal!
     print(f'ERRO EXATO NO PYTHON: {error}')
-    return None
+    return []

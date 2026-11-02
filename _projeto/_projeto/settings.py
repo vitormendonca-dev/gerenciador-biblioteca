@@ -128,5 +128,3 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
-
-API_KEY = 'AIzaSyAQfu5tqSx_jEyiksRwWaSPHLvwm2TImAs'
