@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'biblioteca',
-    'rest_framework'
+    'rest_framework',
+    'requests',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,5 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+API_KEY = 'AIzaSyAQfu5tqSx_jEyiksRwWaSPHLvwm2TImAs'
