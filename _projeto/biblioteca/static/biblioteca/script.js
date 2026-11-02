@@ -1,166 +1,59 @@
-const API = '/api/livros/';
+const API = '/api/buscar/';
 
-const $ = (id) => document.getElementById(id);
-let livros = [];
-let editingId = null;
+const searchInput = document.getElementById('search');
+const listContainer = document.getElementById('list');
 
-function showError(msg) {
-  $('error').textContent = msg;
-  $('error').hidden = !msg;
-}
+// Ouve o que o utilizador está a escrever na barra de pesquisa
+searchInput.addEventListener('input', async function(e) {
+    const termo = e.target.value.trim();
 
-// Transforma a resposta de erro do DRF em texto legível.
-// O DRF devolve algo como {"titulo": ["Este campo é obrigatório."]}
-function formatError(status, text) {
-  try {
-    const data = JSON.parse(text);
-    if (data && typeof data === 'object') {
-      const linhas = Object.entries(data).map(([campo, msgs]) =>
-        `${campo}: ${Array.isArray(msgs) ? msgs.join(' ') : msgs}`);
-      return `Erro ${status}\n${linhas.join('\n')}`;
+    // Se o texto tiver menos de 2 letras, limpa a lista e não faz nada
+    if (termo.length < 2) {
+        listContainer.innerHTML = '';
+        return;
     }
-  } catch (e) { /* não era JSON */ }
-  return `Erro ${status}`;
-}
 
-async function api(url, options = {}) {
-  const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(formatError(res.status, text));
-  }
-  return res.status === 204 ? null : res.json();
-}
+    try {
+        const resposta = await fetch(`/api/buscar/?termo=${encodeURIComponent(termo)}`);
+        const dados = await resposta.json();
 
-async function load() {
-  try {
-    const data = await api(API);
-    // Se você ativar paginação no DRF, a lista vem dentro de "results"
-    livros = Array.isArray(data) ? data : data.results || [];
-    showError('');
-  } catch (e) {
-    livros = [];
-    showError(e instanceof TypeError
-      ? 'Não consegui falar com a API. O servidor Django está rodando?'
-      : e.message);
-  }
-  render();
-}
+        // Limpa os resultados anteriores da tela
+        listContainer.innerHTML = '';
 
-async function run(action) {
-  try {
-    await action();
-    showError('');
-    await load();
-    return true;
-  } catch (e) {
-    showError(e instanceof TypeError ? 'Não consegui falar com a API.' : e.message);
-    return false;
-  }
-}
+        // Verifica se o Google/Django retornou livros com sucesso
+        if (dados.items && dados.items.length > 0) {
+            dados.items.forEach(livro => {
+                const info = livro.volumeInfo;
+                const titulo = info.title || 'Título desconhecido';
+                const autor = info.authors ? info.authors.join(', ') : 'Autor desconhecido';
+                
+                // Pega o link da capa (se existir)
+                const capa = info.imageLinks && info.imageLinks.thumbnail 
+                    ? info.imageLinks.thumbnail 
+                    : '';
 
-function formData() {
-  const body = {
-    titulo: $('titulo').value.trim(),
-    autor: $('autor').value.trim(),
-    isbn: $('isbn').value.trim(),
-  };
-  const data = $('dataPublicacao').value;
-  if (data) body.dataPublicacao = data;
-  return JSON.stringify(body);
-}
+                // Cria o elemento visual para cada livro encontrado
+                const li = document.createElement('li');
+                li.style.cssText = "display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
+                
+                li.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        ${capa ? `<img src="${capa}" alt="Capa" style="width: 50px; height: 75px; object-fit: cover; border-radius: 4px;">` : '<div style="width:50px; height:75px; background:#ddd; display:flex; align-items:center; justify-content:center; font-size:10px; color:#666;">Sem capa</div>'}
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; font-size: 16px; color: #333;">${titulo}</h4>
+                            <p style="margin: 0; font-size: 14px; color: #666;">${autor}</p>
+                        </div>
+                    </div>
+                    <button class="primary" style="padding: 6px 12px; cursor: pointer;" onclick="alert('Funcionalidade de guardar em breve!')">Adicionar</button>
+                `;
 
-function resetForm() {
-  editingId = null;
-  $('form').reset();
-  $('formTitle').textContent = 'Novo livro';
-  $('submitBtn').textContent = 'Adicionar livro';
-  $('cancelBtn').hidden = true;
-}
+                listContainer.appendChild(li);
+            });
+        } else {
+            listContainer.innerHTML = '<li style="padding: 10px; color: #666;">Nenhum livro encontrado.</li>';
+        }
 
-function startEdit(livro) {
-  editingId = livro.id;
-  $('titulo').value = livro.titulo || '';
-  $('autor').value = livro.autor || '';
-  $('isbn').value = livro.isbn || '';
-  $('dataPublicacao').value = livro.dataPublicacao || '';
-  $('formTitle').textContent = 'Editar livro';
-  $('submitBtn').textContent = 'Salvar alterações';
-  $('cancelBtn').hidden = false;
-  $('titulo').focus();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function render() {
-  const termo = $('search').value.trim().toLowerCase();
-  const visiveis = livros.filter((l) =>
-    (l.titulo || '').toLowerCase().includes(termo) ||
-    (l.autor || '').toLowerCase().includes(termo));
-  const list = $('list');
-  list.innerHTML = '';
-
-  if (!visiveis.length) {
-    const li = document.createElement('li');
-    const span = document.createElement('span');
-    span.className = 'msg';
-    span.textContent = livros.length
-      ? 'Nenhum livro encontrado para essa busca.'
-      : 'Nenhum livro ainda. Preencha o formulário acima para adicionar o primeiro.';
-    li.appendChild(span);
-    list.appendChild(li);
-  }
-
-  visiveis.forEach((l) => {
-    const li = document.createElement('li');
-
-    const info = document.createElement('div');
-    info.className = 'info';
-    const titulo = document.createElement('div');
-    titulo.className = 'titulo';
-    titulo.textContent = l.titulo;
-    const detalhe = document.createElement('div');
-    detalhe.className = 'detalhe';
-    detalhe.textContent = [l.autor, 'ISBN ' + l.isbn, l.dataPublicacao]
-      .filter(Boolean).join('  |  ');
-    info.appendChild(titulo);
-    info.appendChild(detalhe);
-    li.appendChild(info);
-
-    const edit = document.createElement('button');
-    edit.className = 'small';
-    edit.textContent = 'Editar';
-    edit.onclick = () => startEdit(l);
-    li.appendChild(edit);
-
-    const del = document.createElement('button');
-    del.className = 'small danger';
-    del.textContent = 'Excluir';
-    del.onclick = () => {
-      if (!confirm(`Excluir o livro "${l.titulo}"?`)) return;
-      if (editingId === l.id) resetForm();
-      run(() => api(`${API}${l.id}/`, { method: 'DELETE' }));
-    };
-    li.appendChild(del);
-
-    list.appendChild(li);
-  });
-
-  $('count').textContent = livros.length
-    ? `${visiveis.length} de ${livros.length} livros`
-    : '';
-}
-
-$('form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const ok = editingId === null
-    ? await run(() => api(API, { method: 'POST', body: formData() }))
-    : await run(() => api(`${API}${editingId}/`, { method: 'PUT', body: formData() }));
-  if (ok) resetForm();
+    } catch (erro) {
+        console.error('Erro ao buscar os livros:', erro);
+    }
 });
-
-$('cancelBtn').addEventListener('click', resetForm);
-$('search').addEventListener('input', render);
-load();
